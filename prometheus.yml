@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Scrape your simulated backend
+  - job_name: "my-backend"
+    static_configs:
+      - targets: ["my-backend:8000"]
+
+  # Scrape your simulated frontend
+  - job_name: "my-frontend"
+    static_configs:
+      - targets: ["my-frontend:80"]

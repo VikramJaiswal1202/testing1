@@ -1,0 +1,47 @@
+# You do not need the 'version' tag anymore in modern Docker Compose
+services:
+  # ==========================================
+  # 1. YOUR MICROSERVICES (Simulated here)
+  # ==========================================
+  my-frontend:
+    # Example: Replace with your actual frontend build/image
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    # Ensure this container has labels or network settings Prometheus can scrape
+
+  my-backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/config.json:/app/config.json
+
+  # ==========================================
+  # 2. THE OBSERVABILITY STACK
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      # We map a configuration file into Prometheus so it knows what to scrape
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - my-frontend
+      - my-backend
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      # Default login credentials
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - prometheus

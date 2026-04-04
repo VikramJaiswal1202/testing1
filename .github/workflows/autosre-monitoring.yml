@@ -1,0 +1,40 @@
+name: Continuous SRE Monitoring
+
+on:
+  # Run on a schedule (e.g., every 5 minutes)
+  schedule:
+    - cron: '*/5 * * * *'
+  # Allow manual testing from the Actions tab
+  workflow_dispatch:
+  # Optionally run after a deployment completes
+  # deployment_status:
+
+jobs:
+  run-sre-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run AutoSRE Agent
+        # Make sure this matches your actual GitHub username and this repository's name
+        uses: VikramJaiswal1202/OpsFox@main 
+        with:
+          # REQUIRED: The URL where Prometheus is accessible
+          prometheus_url: "http://your-production-prometheus:9090"
+          
+          # REQUIRED: The GitHub token (automatically provided by Actions)
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # OPTIONAL: The services you want it to monitor
+          services_config: "frontend,backend-api,orders-db"
+
+          # OPTIONAL: Grafana integration (if you want the agent to use Grafana data)
+          # grafana_url: "http://your-production-grafana:3000"
+          # grafana_user: "admin"
+          # grafana_password: ${{ secrets.GRAFANA_PASSWORD }}
+
+      - name: Check Agent Output
+        run: |
+          echo "System Status: ${{ steps.run-sre-agent.outputs.system_status }}"
+          echo "Action Taken: ${{ steps.run-sre-agent.outputs.executed_action }}"

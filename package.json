@@ -1,0 +1,29 @@
+{
+  "name": "microserv-next",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npm run build && node server.js",
+    "lint": "next lint",
+    "postinstall": "next build"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikunjagarwal05/microswrvices.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikunjagarwal05/microswrvices/issues"
+  },
+  "homepage": "https://github.com/nikunjagarwal05/microswrvices#readme",
+  "description": ""
+}
