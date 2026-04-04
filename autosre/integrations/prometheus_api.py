@@ -26,7 +26,8 @@ class PrometheusAPI:
         # Assuming a basic metric exposed by chaos_engine or similar
         # For this prototype we'll fetch basic up status or request dummy metrics
         # If testing with mock frontend/backend, adjust query accordingly
-        query = f'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{{job="{service_name}"}}[5m]))'
+        # Map to the new metric we added in FastAPI
+        query = f'histogram_quantile(0.95, rate(http_request_latency_seconds_bucket{{job="{service_name}"}}[5m]))'
         result = cls.query(query)
         
         # Mock logic if empty for testing
@@ -37,8 +38,10 @@ class PrometheusAPI:
             return None
             
         try:
-            return float(result[0]['value'][1])
-        except (IndexError, KeyError, ValueError):
+            val_in_seconds = float(result[0]['value'][1])
+            if str(val_in_seconds) == "nan": return None
+            return val_in_seconds * 1000.0 # Convert to ms for AnomalyDetector
+        except (IndexError, KeyError, ValueError, TypeError):
             return None
 
     @classmethod
